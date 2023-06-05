@@ -17,9 +17,9 @@ const toArrowCalendar = (data, globalCSS) => {
       this.minDate = new Date();
       this.data = reactive(this.setup);
       this.mutate = new MutationObserver((records) => {
-        const event_phase = data.phaseMap.get('event');
-        const start_phase = data.phaseMap.get('start');
-        const end_phase = data.phaseMap.get('end');
+        const event_phase = data.phaseMap.event || 0;
+        const start_phase = data.phaseMap.start || 0;
+        const end_phase = data.phaseMap.end || 0;
         const event_date = parseDate(data.dates[event_phase]);
         const start_date = parseDate(data.dates[start_phase]);
         const end_date = parseDate(data.dates[end_phase]);
