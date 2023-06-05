@@ -17,24 +17,28 @@ const toArrowCalendar = (data, globalCSS) => {
       this.minDate = new Date();
       this.data = reactive(this.setup);
       this.mutate = new MutationObserver((records) => {
-        const event_phase = data.phaseMap.event || 0;
-        const start_phase = data.phaseMap.start || 0;
-        const end_phase = data.phaseMap.end || 0;
-        const event_date = parseDate(data.dates[event_phase]);
-        const start_date = parseDate(data.dates[start_phase]);
-        const end_date = parseDate(data.dates[end_phase]);
-        this.minDate = new Date();
-        this.maxDate = undefined;
-        if (data.phase === start_phase && event_date !== null) {
-          this.maxDate = event_date;
-        }
-        if (data.phase === end_phase && start_date !== null) {
-          this.minDate = start_date;
-        }
+        this.limitDates();
         if (initialize_calendar(records)) return;
         const date = this.date?.toISOString() || null;
         data.setPhaseDate(data.phase, date);
       });
+    }
+
+    limitDates() {
+      const event_phase = data.phaseMap.event || 0;
+      const start_phase = data.phaseMap.start || 0;
+      const end_phase = data.phaseMap.end || 0;
+      const event_date = parseDate(data.dates[event_phase]);
+      const start_date = parseDate(data.dates[start_phase]);
+      const end_date = parseDate(data.dates[end_phase]);
+      this.minDate = new Date();
+      this.maxDate = undefined;
+      if (data.phase === start_phase && event_date !== null) {
+        this.maxDate = event_date;
+      }
+      if (data.phase === end_phase && start_date !== null) {
+        this.minDate = start_date;
+      }
     }
 
     static get setup() {
@@ -55,6 +59,7 @@ const toArrowCalendar = (data, globalCSS) => {
         this.date = val ? new Date(val) : "";
       }
       else if (name === 'phase') {
+        this.limitDates();
         const date = data.getPhaseDate('');
         this.date = date ? new Date(date) : "";
       }
