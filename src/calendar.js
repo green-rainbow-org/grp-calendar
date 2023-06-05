@@ -1,6 +1,6 @@
 import calendarCSS from './calendar.module.css';
 import { LionCalendar } from "@lion/calendar";
-import { reactive } from '@arrow-js/core';
+import { html, reactive } from '@arrow-js/core';
 import { arrowTags } from 'arrow-tags';
 
 const parseDate = (date_string) => {
