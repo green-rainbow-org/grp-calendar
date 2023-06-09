@@ -3,11 +3,6 @@ import { LionCalendar } from "@lion/calendar";
 import { html, reactive } from '@arrow-js/core';
 import { arrowTags } from 'arrow-tags';
 
-const parseDate = (date_string) => {
-  if (date_string === null) return null;
-  return new Date(Date.parse(date_string));
-}
-
 const toArrowCalendar = (data, globalCSS) => {
 
   class Calendar extends LionCalendar {
@@ -20,31 +15,19 @@ const toArrowCalendar = (data, globalCSS) => {
         this.limitDates();
         if (initialize_calendar(records)) return;
         const date = this.date?.toISOString() || null;
-        data.setPhaseDate(data.phase, date);
+        data.setActiveDate(date);
       });
     }
 
     limitDates() {
-      const event_phase = data.phaseMap.event || 0;
-      const start_phase = data.phaseMap.start || 0;
-      const end_phase = data.phaseMap.end || 0;
-      const event_date = parseDate(data.dates[event_phase]);
-      const start_date = parseDate(data.dates[start_phase]);
-      const end_date = parseDate(data.dates[end_phase]);
-      this.minDate = new Date();
-      this.maxDate = undefined;
-      if (data.phase === start_phase && event_date !== null) {
-        this.maxDate = event_date;
-      }
-      if (data.phase === end_phase && start_date !== null) {
-        this.minDate = start_date;
-      }
+      this.minDate = data.getMinDate() || new Date();
+      this.maxDate = data.getMaxDate() || undefined;
     }
 
     static get setup() {
       return {
         phase: data.phase,
-        date: data.getPhaseDate('')
+        date: data.getActiveDate('')
       };
     }
 
@@ -60,7 +43,7 @@ const toArrowCalendar = (data, globalCSS) => {
       }
       else if (name === 'phase') {
         this.limitDates();
-        const date = data.getPhaseDate('');
+        const date = data.getActiveDate('');
         this.date = date ? new Date(date) : "";
       }
     }
@@ -103,7 +86,7 @@ const toArrowCalendar = (data, globalCSS) => {
 const toCalendar = (data, globalCSS) => {
   const ArrowCalendar = toArrowCalendar(data, globalCSS);
   return toTag('calendar', ArrowCalendar)``({ 
-    date: d => d.getPhaseDate(''),
+    date: d => d.getActiveDate(''),
     phase: d => d.phase,
     class: d => {
       if (!d.hasCalendar()) {
